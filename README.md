@@ -1,8 +1,8 @@
-# 280stats
+# stats280
 
 This repo contains all the notes, ideas, scripts and figures for the twitter statistics course I am attempting to write.
 
-The hashtag for the course is #280stats.
+The hashtag for the course is #stats280. 280 characters on twitter and it's a statistics course.
 
 
 ## Folders and files
