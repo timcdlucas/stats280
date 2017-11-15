@@ -107,6 +107,8 @@ crossv_mc(mtcars, 10) %>%
   summarise(e1 = mean(map2_dbl(m1, .$test, mae)), 
             e2 = mean(map2_dbl(m2, .$test, mae)))
 ```
+abs_lm_fig.tex
+
 
 2)
 ```{pipeline2}
@@ -118,6 +120,10 @@ f2 = lm(mpg ~ 1, mtcars)
 
 anova(f1, f2)
 ```
+
+maxlike_lm_fig.tex
+
+
 
 3) Bayes and Bayes factor
 ```{pipeline3}
@@ -138,3 +144,112 @@ then parameter selection, then lots of models and finally implementation.
 #stats280
 
 - analysis_schem.png
+
+
+
+
+
+
+```{plots}
+
+library('RColorBrewer')
+library('tikzDevice')
+
+#plot(1:10,1:10, col='white')
+#text(runif(1,0,10),runif(1,0,10),expression(paste(frac(1,paste(sigma, sqrt(paste(2, pi)))),~e^-~frac((x~-~mu)^2,paste(2, sigma^2)))), cex=1.3)
+r <- brewer.pal( 8, 'Set1')[1]
+b <- brewer.pal( 8, 'Set1')[2]
+g <- brewer.pal( 8, 'Set1')[3]
+p <- brewer.pal( 8, 'Set1')[4]
+o <- brewer.pal( 8, 'Set1')[5]
+
+br <- brewer.pal( 8, 'Set1')[7]
+arrowWidth <- 8
+
+
+tikz("~/Dropbox/Documents/stats280/figs/maxlike_lm_fig.tex", width = 6, height = 6, 
+standAlone = TRUE,
+packages = c("\\usepackage{tikz}",
+"\\usepackage[active,tightpage,psfixbb]{preview}",
+"\\PreviewEnvironment{pgfpicture}",
+"\\setlength\\PreviewBorder{0pt}",
+"\\usepackage{amssymb}",
+"\\usepackage[scaled]{helvet}",
+"\\renewcommand*\\familydefault{\\sfdefault}", 
+"\\usepackage[T1]{fontenc}",
+"\\usepackage{textgreek}"))
+
+
+par(mar=c(4,4,0,0)+0.3, cex=1.8)
+
+plot( 1:5, 1:5, col='white', xlab = '$x$', ylab='$y$', xlim=c(0,5), ylim=c(0,5),xaxs='i', yaxs='i' )
+
+abline(2, 0.3, col=p, lwd=7)
+
+
+
+x2 <- 2.5
+y2 <- seq(1.95, 3.55, length.out=100)
+e2 <- dnorm(y2, 0.3*x2+2,  0.2)/3
+xe2 <- x2 + e2
+
+lines(y2~rep(x2, 100), col=r, lty=5)
+lines(y2~xe2, lwd = 5, col=r)
+
+yData <- 2.5
+
+points(x2, yData, col=b, pch=16, cex=1)
+arrows(x2, 0.3*x2+2, x2, yData+0.04, col=b, lwd=3, length=0.1)
+arrows(x2, yData, x2+dnorm(yData, 0.3*x2+2, 0.2)/3 , col=b, lwd=3, length=0.1)
+
+text(x2-0.4, yData-0.2, '${\\color[HTML]{377EB8}(x,y)}$')
+
+
+text(2.6, 1.1, '$ \\mathcal{L}({\\color[HTML]{984EA3}\\beta})=\\textrm{dnorm}({\\color[HTML]{377EB8}y} - {\\color[HTML]{377EB8}x}{\\color[HTML]{984EA3}\\beta})$', cex=1.5)
+
+dev.off()
+
+
+
+
+
+
+tikz("~/Dropbox/Documents/stats280/figs/abs_lm_fig.tex", width = 6, height = 6, 
+standAlone = TRUE,
+packages = c("\\usepackage{tikz}",
+"\\usepackage[active,tightpage,psfixbb]{preview}",
+"\\PreviewEnvironment{pgfpicture}",
+"\\setlength\\PreviewBorder{0pt}",
+"\\usepackage{amssymb}",
+"\\usepackage[scaled]{helvet}",
+"\\renewcommand*\\familydefault{\\sfdefault}", 
+"\\usepackage[T1]{fontenc}",
+"\\usepackage{textgreek}"))
+
+
+par(mar=c(4,4,0,0)+0.3, cex=1.8)
+
+plot( 1:5, 1:5, col='white', xlab = '$x$', ylab='$y$', xlim=c(0,5), ylim=c(0,5),xaxs='i', yaxs='i' )
+
+abline(2, 0.3, col=p, lwd=7)
+
+
+
+x2 <- 2.5
+
+yData <- 2
+
+points(x2, yData, col=b, pch=16, cex=1)
+arrows(x2, 0.3*x2+2, x2, yData+0.04, col=b, lwd=3, length=0.1)
+#arrows(x2, yData, x2+dnorm(yData, 0.3*x2+2, 0.2)/3 , col=b, lwd=3, length=0.1)
+
+text(x2-0.4, yData-0.2, '${\\color[HTML]{377EB8}(x,y)}$')
+
+
+text(2.6, 1.1, '$ \\textrm{Absolute error}=({\\color[HTML]{377EB8}y} - {\\color[HTML]{377EB8}x}{\\color[HTML]{984EA3}\\beta})$', cex=1.5)
+
+dev.off()
+
+
+
+```
