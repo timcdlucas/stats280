@@ -35,6 +35,47 @@ They ask different questions. Which of these hypotheses does my data
 support? How/how well can I predict something of interest. What is 
 interesting in my data? #stats280
 
+### Explore
+
+```{taskscode}
+
+# Explore visually
+mtcars %>%
+  gather("var", "value", -mpg) %>% 
+  ggplot(aes(x = value, y = mpg)) +
+    geom_point() +
+    geom_smooth() + 
+    facet_wrap(~ var, scales = "free") 
+#stats280
+
+# Explore with correlation
+mtcars %>%
+  gather("var", "value", -mpg) %>% 
+  group_by(var) %>% 
+  summarise(p = cor(value, mpg, method = 'pear')) %>% 
+  arrange(abs(p))
+#stats280
+  
+### confirmatory 
+
+# Do formal frequentist test on 1 variable
+lm(mpg ~ wt, mtcars) %>% anova
+
+### predictive
+
+# Fit two predictive models
+lm <- lm(mpg ~ ., mtcars)
+mean(lm$residuals ^ 2)
+
+sv <- e1071::svm(mpg ~ ., mtcars)
+mean(sv$residuals ^ 2)
+```
+
+
+
+
+
+
 
 ### An analysis
 
