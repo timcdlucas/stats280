@@ -1,11 +1,11 @@
 # stats280
 
-## An overview:
+## Welcome
 
 I'm going to start this twitter stats course now #stats280. I'll be 
 aiming it at UG bios with a little background knowledge. I won't do
 a dedicated probability section but will try to explain everything as I go.
-
+  
 However, it's a stats course, not an R course. I'll assume tidyverse 
 and modelr are loaded, but otherwise include pkg info. I like this R
 course as a starter. #stats280 http://dzchilds.github.io/aps-data-analysis-L1/ 
@@ -15,19 +15,66 @@ and interesting replies. Feel free to PR or open issues on github. #stats280
 https://github.com/timcdlucas/stats280
 
 Some principles: I'll focus on general understanding, not learning a 
-long list of specific tests. Sims to explore, understand and check things 
-is great. #dataviz is vital. I am agnostic between frequentism, bayes 
-and machine learning. #stats280
+long list of specific tests. Focus on the similarities between methods,
+not the differences. Using sims to explore, understand and check things 
+is great. #dataviz is vital. #stats280
 
+And as a final aside, I am agnostic between frequentism, bayes and 
+more machine learning type approaches. #stats280
 
+## Introduction
+
+### Tasks
 
 The three broad tasks in statistics are exploration, prediction and 
-confirmation/hypothesis testing. #stats280
+confirmation/hypothesis testing. I'll come back to this a lot. #stats280
 https://dynamicecology.wordpress.com/2013/10/16/in-praise-of-exploratory-statistics/
 
 
+They ask different questions. Which of these hypotheses does my data 
+support? How/how well can I predict something of interest. What is 
+interesting in my data? #stats280
 
 
+### An analysis
+
+It's useful to split "an analysis" into parts to highlight similarities. 
+One way: Model selection, model structure, parameter estimation and 
+implementation. #stats280 
+
+- analysis_schem.png
+
+Model selection: when we have multiple models or hypotheses how do we
+choose which one(s) to keep or are good? Our answer could be 1 or more 
+"best" models oe "we don't know". Examples: Frequentist tests, AIC, 
+predictive accuracy, Bayes factors. #stats280
+
+Model structure: what is the structure of the underlying mathematical 
+model? There is always an underlying mathematical, though it might be
+hard to see. Examples: linear model (maybe discrete x's), decision trees, 
+random effects. #stats280
+
+Parameter estimation: a model has parameters. How (in theory) do we 
+decide what they are? Examples: maximum likelihood, bayesian estimation.
+#stats280
+
+Implementation: how do we literally do what we decided above? If we 
+want to select pars by MaxLikelihood, how do we do that? Becomes more
+important e.g. in Bayes when we have to use an approximation. Do we use
+INLA or MCMC etc. #stats280
+
+
+
+This covers more analyses than one might think. To show this, I'll fit 
+2 models, (y = bx + c and y = c) and select on in 3 ways (ignoring 
+implementation for now). #stats280
+
+
+1) Select pars that minimise absolute error between data and model. 
+Choose model that best predicts holdout data. 2) Pars that maximise 
+likelihood, chose model with frequentist test 3) Select pars and model
+with Bayes. #stats280
+ 
                                                                                
 
 ```{setup}
@@ -48,7 +95,7 @@ library(modelr)
 ggplot(mtcars, aes(disp, mpg)) + geom_point()
 ```
 
-
+1) MaxLike and frequentist test
 ```{pipeline1}
 ## Fit by absolute error
 ## Compare by crossvalidation.
@@ -61,6 +108,7 @@ crossv_mc(mtcars, 10) %>%
             e2 = mean(map2_dbl(m2, .$test, mae)))
 ```
 
+2)
 ```{pipeline2}
 ## Fit by maximum likelihood
 ## Compare with frequentist aov
@@ -71,9 +119,8 @@ f2 = lm(mpg ~ 1, mtcars)
 anova(f1, f2)
 ```
 
-
+3) Bayes and Bayes factor
 ```{pipeline3}
-
 
 ## Fit by bayes
 ## Compare by bayesuan waic
@@ -83,3 +130,11 @@ b2 = inla(mpg ~ 1, data = mtcars, control.compute=list(waic=TRUE))
 b1$mlik[1] - b2$mlik[1]
 ```
 
+
+
+This way of dividing an analysis will form the backbone of the course
+content. We'll look at model selection (frequentist, bayes, CV, etc.), 
+then parameter selection, then lots of models and finally implementation.
+#stats280
+
+- analysis_schem.png
