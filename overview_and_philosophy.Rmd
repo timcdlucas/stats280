@@ -48,6 +48,8 @@ mtcars %>%
     facet_wrap(~ var, scales = "free") 
 #stats280
 
+ggsave('figs/mtcars_explore.png')
+
 # Explore with correlation
 mtcars %>%
   gather("var", "value", -mpg) %>% 
@@ -69,7 +71,12 @@ mean(lm$residuals ^ 2)
 
 sv <- e1071::svm(mpg ~ ., mtcars)
 mean(sv$residuals ^ 2)
+plot(sv$fitted ~ mtcars$mpg)
+
+
 ```
+
+svm_obs_fit.png
 
 
 
