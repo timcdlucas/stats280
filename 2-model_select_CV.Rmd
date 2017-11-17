@@ -1,1 +1,226 @@
 # Model selection by cross validation
+
+```{setup}
+library(tidyverse)
+
+```
+
+## What is model selection and why do we do it?
+
+For any dataset, there are many models we could fit. How do we decide 
+which is best? It depends on the aim/question. If prediction is our aim, 
+we simply measure how well they predict! # stats280
+  
+-ML_model_comp.png
+  
+```{caret-model-comp}
+
+library(caret)
+
+set.seed(1)
+cv <- createDataPartition(mtcars$mpg, times = 15, p = 0.8)
+
+tr <- trainControl(index = cv)
+
+m1 <- train(mpg ~ ., 
+            mtcars,
+            method = 'enet',
+            trControl = tr)
+
+m2 <- train(mpg ~ .,  
+            mtcars,
+            method = 'rf',
+            trControl = tr)
+
+m3 <- train(mpg ~ .,
+            mtcars,
+            method = 'nnet',
+            trControl = tr,
+            tuneLength = 10,
+            linout = TRUE)
+
+
+m4 <- train(mpg ~ .,
+            mtcars,
+            method = 'lm',
+            trControl = tr)
+
+m5 <- train(mpg ~ .,
+            mtcars,
+            method = 'rlm',
+            trControl = tr)
+
+m6 <- train(mpg ~ .,
+            mtcars,
+            method = 'gaussprPoly',
+            trControl = tr,
+            tuneLength = 5)
+
+
+m7 <- caret::train(mpg ~ .,
+            mtcars,
+            method = 'glmboost',
+            trControl = tr)
+
+
+png('figs/ML_model_comp.png')
+resamples(list(ElasticNet = m1, 
+               RandomForest = m2, 
+               NeuralNetwork = m3,
+               lm = m4,
+               RobustLM = m5,
+               GaussianProcess = m6,
+               BoostedLM = m7)) %>% dotplot(metric = 'RMSE', main = 'mtcars mpg prediction')
+dev.off()
+
+```
+  
+  
+
+However, we can also use careful choices of candidate models to ask specific 
+questions. If in 1 model y varies with x but is independant from x in 
+another, selecting the "best" model is asking "does y vary with x".
+#stats280
+
+- hyptest.png
+
+```{hyptest-fig}
+ggplot(mtcars, aes(disp, mpg)) + 
+  geom_point() + 
+  geom_smooth(method = 'lm', formula = y ~ 1, col = 'darkred', fill = 2) +
+  geom_smooth(method = 'lm')
+
+ggsave('figs/hyptest.png')
+```
+
+
+
+
+
+
+
+
+
+One fundemental issue when doing model selection is that a complex or
+flexible model will always "fit the data" better. But this doesnt 
+really mean the model is better. #stats280
+
+
+```{overfit}
+
+## Problems with model selection
+
+library(tidyverse)
+library(modelr)
+
+
+ggplot(data_frame(x = 1:20, y = rnorm(20)), aes(x, y)) + 
+  geom_point() + 
+  geom_smooth(se = F) +
+  geom_smooth(span = 0.25, se = F, col = 'red')
+
+ggsave('~/Dropbox/Documents/stats280/figs/overfit.png')
+
+
+```
+
+This bias towards complex models includes flexible (wiggly) response
+curves but also the number of predictor variables in a model. #stats280
+
+- overfit2
+
+The bias towards complex models is inherent in many common
+measures of how well a model fits. To overcome this bias, measures need
+something external to the data: a priori assumptions, external validation
+data, etc. #stats280
+
+-overfit2
+-overfit3
+
+```{overfit2}
+
+## Overfitting
+set.seed(1)
+
+
+d = data.frame(matrix(rnorm(30*20), ncol = 20))
+d$y = d$X1 + rnorm(30, sd = 1)
+map_dbl(2:20, ~ logLik(lm(d[, 1:.x]))) %>% 
+  plot(xlab = 'N vars', ylab = 'log lhood')
+
+
+d = data.frame(matrix(rnorm(30*20), ncol = 20))
+d$y = d$X1 + rnorm(30, sd = 1)
+map_dbl(2:20, ~ summary(lm(d[, 1:.x]))$r.squared) %>% 
+  plot(xlab = 'N vars', ylab = 'R squared')
+
+
+
+
+#map_dbl(2:20, ~ summary(lm(d[, 1:.x]))$adj.r.squared) %>% plot
+#map_dbl(2:20, ~ AIC(lm(d[, 1:.x]))) %>% plot
+
+```
+
+
+
+In practise there is usually a trade off between simple and complex models.
+Complex models overfit (fit to the noise), simpler models underfit (cant
+explain all the variation in the data). #stats280
+
+Another term for this trade off is bias-variance. If we collected the data
+again, biased models would be similar and wrong in the same places. High variance 
+models would be wildly different and wrong in different places #stats280
+
+Bias variance also applies to estimated parameters. Compare a parameter
+estimated in simple and complex models. #stats280
+ replicate(1000,  
+           sample_frac(mtcars, rep = T) %>% 
+{c(bias = lm(.[, 1:2])$coef[2], var = lm(.)$coef[2])}) %>% 
+t %>% boxplot
+
+- bias-variance-par.png
+
+```{bias}
+
+
+
+set.seed(1)
+
+## Bias - variance
+ mtcars  %>% 
+   sample_frac(20, replace = T) %>% 
+   cbind(b = 1:20) %>% 
+   ggplot(aes(disp, mpg)) +
+     geom_jitter() + 
+     geom_smooth(method = 'lm', se=F) +
+     geom_smooth(span = 0.5, se=F, colour=2) +
+     facet_wrap( ~ b)
+ 
+ggsave('figs/bias-variance.png')
+ 
+
+ f <- function(d) c(bias = lm(d[, 1:2])$coef[2], var = lm(d)$coef[2])
+ replicate(1000, f(sample_frac(mtcars, rep = T))) %>% t %>% boxplot
+ 
+ png('figs/bias-variance-par.png')
+ replicate(1000,  
+           sample_frac(mtcars, rep = T) %>% 
+              {c(bias = lm(.[, 1:2])$coef[2], var = lm(.)$coef[2])}) %>% 
+   t %>% boxplot
+ dev.off()
+
+ 
+ 
+## Cross validation is one solution
+ 
+ 
+modelr::crossv_mc(mtcars, 100) %>% 
+ mutate(models = map(.$train, ~ lm(mpg ~ wt, data = .))) %>% 
+ mutate(error = map2_dbl(.$models, .$test, modelr::rmse))
+ 
+
+```
+
+
+
