@@ -164,6 +164,9 @@ map_dbl(2:20, ~ summary(lm(d[, 1:.x]))$r.squared) %>%
 
 
 
+
+
+
 In practise there is usually a trade off between simple and complex models.
 Complex models overfit (fit to the noise), simpler models underfit (cant
 explain all the variation in the data). #stats280
@@ -211,16 +214,116 @@ ggsave('figs/bias-variance.png')
  dev.off()
 
  
- 
+```
+
+
+
+
+
+One conceptually simple way to select a model is cross-validation. It 
+is particularly useful if your aim is prediction. We split our data 
+into train and test sets, fit models to the train set and try to predict 
+the test set. Then pick the one that does the best #stats280
+
+
+We can see that cross-validation at least mitigates the bias towards
+complex models. The minimum out-of-sample error here is obtained with
+an intermediate model. y~x it too simple, y ~ x^3 is too complex. #stats280
+
+
+Out of sample accuracy for increasingly complex models.
+
+map(1:4, ~crossv_mc(mtcars, 100) %>% 
+      mutate(models = map(.$train, ~ lm(mpg ~ poly(wt, .x), data = .))) %>% 
+      summarise(mean(map2_dbl(.$models, .$test, rmse)))) %>% unlist %>% plot
+#rstats #stats280
+
+
+There are a few flavours of cross-validation but the best is repeated
+k-fold cross validation. Split the data into k (~5-10) groups, 
+leave one out in turn. Then repeat the whole thing a number of times.
+#stats280 http://appliedpredictivemodeling.com/blog/2014/11/27/vpuig01pqbklmi72b8lcl3ij5hj2qm
+
+To summarise, we can use cross-validation to chose a best model without
+ignoring the bias-variance trade-off. We immitate the process of 
+making predictions on new un-seen data by splitting into train and test 
+sets. #stats280
+
+
+```{cv}
+
 ## Cross validation is one solution
- 
- 
+
+ggplot(mtcars, aes(mpg, wt)) + 
+  geom_point() + 
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 8), se = F) +
+  geom_smooth(method = 'lm', se = F, col = 2)
+
 modelr::crossv_mc(mtcars, 100) %>% 
- mutate(models = map(.$train, ~ lm(mpg ~ wt, data = .))) %>% 
- mutate(error = map2_dbl(.$models, .$test, modelr::rmse))
- 
+  mutate(models = map(.$train, ~ lm(mpg ~ wt, data = .))) %>% 
+  summarise(error = mean(map2_dbl(.$models, .$test, modelr::rmse)),
+            likelihood = mean(map_dbl(.$models, logLik)))
+
+modelr::crossv_mc(mtcars, 100) %>% 
+  mutate(models = map(.$train, ~ lm(mpg ~ poly(wt, 2), data = .))) %>% 
+  summarise(error = mean(map2_dbl(.$models, .$test, modelr::rmse)),
+            likelihood = mean(map_dbl(.$models, logLik)))
+
+modelr::crossv_mc(mtcars, 100) %>% 
+  mutate(models = map(.$train, ~ lm(mpg ~ poly(wt, 8), data = .))) %>% 
+  summarise(error = mean(map2_dbl(.$models, .$test, modelr::rmse)),
+            likelihood = mean(map_dbl(.$models, logLik)))
+
 
 ```
+
+```{cv_3}
+library(modelr)
+
+map(1:4, ~crossv_mc(mtcars, 100) %>% 
+            mutate(models = map(.$train, ~ lm(mpg ~ poly(wt, .x), data = .))) %>% 
+            summarise(mean(map2_dbl(.$models, .$test, rmse)))) %>% unlist %>% plot
+
+map(1:4, ~crossv_mc(mtcars, 100) %>% 
+            mutate(models = map(.$train, ~ lm(mpg ~ poly(wt, .x), data = .))) %>% 
+            summarise(mean(map_dbl(.$models, logLik)))) %>% unlist %>% plot
+
+
+```
+
+
+
+Depending on the characteristics of your response variable, and depending
+on your question, differement measures of "predictive ability" are 
+useful. #stats280
+
+If your response variable is continuous, root mean squared error and
+mean absolute error are common metrics. #stats280
+
+If your response variable is binary (or categorical), accuracy (percent
+correct) is a common metric of predictive ability. But if the two
+classes are very imbalanced this doesn't work well. A model for a rare disease
+that always predicts no-disease will be quite accurate. #stats280
+
+For imbalanced categorical responses a metric like kappa gives 
+a models accuracy relative to accuracy expected by chance. #stats280
+
+
+
+Having studied CV we can look at some points that apply to any model 
+selection frame work. 1) What is the metric of "good". 2) What are the
+possible answers (don't know? 1 best model?) 3) How does it control the 
+bias for complex models. #stats280
+
+
+And to highlight these points in CV. 1) Metric of good depends. RMSE or
+kappa maybe. 2) 1 or more "best" models. 3) Bias towards complex models
+is controlled by testing against hold-out data. #stats280
+
+
+Next up, model selection by information criteria. Then frequentist 
+testing. Early warning that pretty much every biologist knows more about
+frequentist statistics than I do... #stats280
 
 
 
