@@ -1,3 +1,0 @@
-# Model selection by information theory
-
-AIC etc.

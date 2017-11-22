@@ -1,0 +1,26 @@
+# Model selection by information criteria
+
+# AIC
+
+
+## Problems with CV
+
+
+
+## Elements
+* How do we control complexity
+* What answers can we get?
+* Metric is AIC.
+
+
+
+
+
+
+
+
+
+
+
+
+# WAIC
