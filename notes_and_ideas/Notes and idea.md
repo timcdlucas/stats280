@@ -1,7 +1,7 @@
 # Stats for twitter
 
 ## 
-tags twitterstats 280stats biostats?
+tag #280stats biostats?
 
 
 
@@ -9,7 +9,7 @@ tags twitterstats 280stats biostats?
 
 Exploratory, confirmatory, predictive.
 
-Model, inference, implementation.
+Model selection, model structure, parameter selection, implementation.
 
 Inference agnostic. Frequentism, bayes, ML.
 
@@ -22,7 +22,25 @@ Simulate to understand, simulate to check.
 Intuition of underlying theory, but not bogged down in maths.
 * Few/no implementation details.
 * Few equations.
-* But never named tests without context.
+* Never named tests without context.
+
+
+
+Model selection, model structure + parameter selection + implementation.
+
+Orthogonal to Exploratory, confirmatory, predictive.
+
+
+Model selection: IT, freq, bayes, out of sample. + visual diagnostics etc., especially for confirmatory. If parameter estimation, a priori model selection only. Inter cluster distance etc. if you have no Y.
+Model structure: Lots. glm, fixed vs random effects, trees, GP, categorical vs continuous Y, categorical vs continuous X. Mechanistic models.
+Parameter selection: Max Likelihood, bayes, CV for hyperpars, normalized information gain etc.
+Implementation: MCMC vs INLA for example.
+
+Some dependence. Certain model selections require certain parameter selections. Can't do AIC/freq/bayes unless loss function is likelihood (+ prior).  
+Can't select with out of sample unless you have Ys.
+
+Confirmatory: probably model selection by IT, freq or bayes, probably relatively simple model structure or mechanistic model
+Predictive: probably model selection by an out-of-sample metric.
 
 
 
@@ -73,6 +91,148 @@ When possible, should fit the same model in a different way. Freq + bayes. ML + 
 
 ## Library
 
+https://dynamicecology.wordpress.com/2013/10/16/in-praise-of-exploratory-statistics/
+http://topepo.github.io/caret/index.html
+https://github.com/dzchilds/stats-for-bio
+http://dzchilds.github.io/aps-data-analysis-L1/
+http://www.biostathandbook.com/
+
+"Visualization can surprise you, but it doesn’t scale well.
+Modeling scales well, but it can’t surprise you."
+
+
+http://onlinelibrary.wiley.com/doi/10.1111/j.1466-8238.2007.00331.x/abstract
+
+
+## Contents
+
+
+   
+   
+   
+### Under/overfitting
+   - bias - variance
+   
+### Model selection.
+   - AIC
+   - Bayes
+   - CV
+   - Frequentism
+   - a priori
+
+### parameter selection
+   - MaxLike
+   - Bayes
+   - ML errors
+
+### Model structure
+
+Over view:
+ - y ~ x
+ - What is Y (nothing, single, vector)
+ - What is x, number of vars, f(x), etc.
+
+   - LM
+   - GLM
+   - ANOVA
+   - discrete vs discrete
+   - GAM
+   - gaussian process
+   - Random Effects
+   - Neural network
+   - trees
+   - Ensembles
+   
+   - PCA
+
+
+### Implementation
+
+#### Software.
+
+Small differences.
+Some is wrong!
+
+#### Algorithm
+
+Both correct: sum of squares vs ompimising the likelihood.
+
+#### MCMC vs INLA
+
+Sometimes differences are different underlying approximations.
+Something may be impossible one way, but possible another.
+
+
+#### Non-converging
+
+Just broken
+
+Can't find optimum or whatever
+
+
+#### Neural nets
+- No expectation of finding true minimum.
+- The implementation is an integral part of "accuracy".
+
+
+
+### Specialist subjects.
+
+#### Spatial methods
+
+#### neural nets?
+
+
+
+
+
+## Contents
+
+### Overview 1
+Exploratory
+Predictive
+Confirmatory
+
+
+### Overview 2
+Model selection
+Model structure 
+Parameter selection
+Implementation
+
+
+
+### Model structures overview
+
+~ X1 + X2 - Clustering, dimensionality reduction (mostly ignore)
+c(Y1, Y2) ~ X1 + X2 - Classification, multivariate stats. (mostly ignore)
+Y ~ X1 + X2 - EVERYTHING
+
+
+How many x's
+What form f(x)
+Distributions. Error distribution of y, distribution of random effects, etc.
+
+
+Parametric vs nonparametric.
+
+#### Continuous / natural numbers Y
+
+Regression y ~ x1 + x2 + ...
+   - Normal (b + f)
+   - Poisson (b + f)
+   - Random effects (b + f)
+   - machine learning, LASSO.
+   
+ANOVA/t-test y ~ factor(x)
+2 way ANOVA y ~ factor(x1)*factor(x2) 
+
+#### Binomial Y
+   - Fisher's exact or something.
+   - Logistic regression (b + f)
+   - ML classification
+
+
 
 
 ## Exploratory, confirmatory, predictive.
@@ -109,3 +269,102 @@ sv <- e1071::svm(mpg ~ ., mtcars)
 mean(sv$residuals ^ 2)
 
 
+
+
+
+
+## Under fit over fit
+
+### As bias variance.
+
+High bias, low variance.
+
+	
+ggplot(d, aes(disp, mpg, colour = boot, group = boot)) +
+  geom_point() + 
+  geom_smooth(method = 'lm', se = FALSE)
+
+d<- mtcars  %>% 
+	sample_frac(20, replace = TRUE) %>% 
+	mutate(boot = factor(rep(1:20, nrow(mtcars)))) 
+
+ggplot(d, aes(disp, mpg)) +
+  geom_point() + 
+  geom_smooth(se = FALSE, span = 0.5) +
+  facet_wrap( ~ boot)
+	  
+	  
+ggplot(d, aes(disp, mpg)) +
+  geom_point() + 
+  geom_smooth(method = 'lm', se = FALSE) +
+  geom_smooth(se = FALSE, span = 0.5, colour = 'red') +
+  facet_wrap( ~ boot)
+
+
+	  
+	  
+	  
+	  
+	  
+
+
+
+
+## Implementation.
+
+
+### Software.
+
+Small differences.
+Some is shit.
+
+### Algorithm
+
+Both correct:
+
+No intercept:
+lm(mpg ~ 0 + qsec, mtcars)$coef
+
+mtcars %$% {sum(qsec * mpg) / sum(qsec ^ 2)}
+
+beta <- seq(-20, 20, 1e-4)
+ss <- sapply(beta, function(b) mtcars %$% sum((b*qsec - mpg)^2))
+plot(ss ~ beta)
+beta[which.min(ss)]
+
+
+
+
+### MCMC vs INLA
+
+Sometimes differences are different underlying approximations.
+Something may be impossible one way, but possible another.
+
+
+### Non-converging
+
+Just broken
+
+Can't find optimum or whatever
+
+
+### Neural nets
+- No expectation of finding true minimum.
+- The implementation is an integral part of "accuracy".
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
