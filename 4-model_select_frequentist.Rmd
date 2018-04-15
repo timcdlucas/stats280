@@ -1,1 +1,59 @@
 # Model selection by frequentist test
+
+Now onto frequentist model selection (i.e. hypothesis testing). I think many scientists pretty much think statistics = hypothesis testing. But hopefully this course will show it is just one approach. #stats280
+
+Also, I've mentioned it before, but literally 95% of working scientists/grad students probably know more about this area than me. Just sayin'. #stats280
+
+The setup is to have a model that encodes the effect of interest (H1) and compare it to a "null" model without that effect (H0). So we might compare y ~ mx + c to y ~ c if we are interested in how y varies with x. #stats280 hyptest.png
+
+We then test how likely it is that we'd see an effect as strong as was observed *assuming H0 was true*. If H0 is very unlikely, we reject it and retain H1. #stats280
+
+
+
+I think the easiest way to think about frequentist tests is permuatation tests. Sticking with y ~ mx + c, if we reorder the x data to break any relationship between y and x, what sizes of m do we get? #stats280
+
+
+
+replicate(1e3, lm(mpg ~ disp, mutate(mtcars, disp = sample(disp)))$coef[2]) %>% hist(xlim = c(-0.05, 0.05))
+abline(v = lm(mpg ~ disp, mtcars)$coef[2], col = 2) #stats280
+hyp_test_freq.png
+
+
+png('~/Dropbox/Documents/stats280/figs/hyp_test_freq.png')
+
+replicate(1e3, lm(mpg ~ disp, mutate(mtcars, disp = sample(disp)))$coef[2]) %>% hist(xlim = c(-0.05, 0.05))
+abline(v = lm(mpg ~ disp, mtcars)$coef[2], col = 2)
+
+
+dev.off()
+
+
+
+Here we have reordered `disp` 100 times to break any association with mpg (H0). We then plot the betas as a histogram. The red line show the beta estimated from the non-randomised data. #stats280
+
+In 100 random resamplings of the data (H0), we never get an effect size as big as we saw in the real data. So we concluse 
+
+
+
+
+
+
+Compared to some of the other model selection methods discussed so far, there's some weird logic in frequentist tests. So good to go back to these 3 questions. #stats280
+https://twitter.com/statsforbios/status/933004578831810560
+
+
+1) What is the metric of "good"?
+The effect size relative to expected effect size under the null. #stats280
+
+2) What are the possible answers?
+We either reject the null or don't. So either H1 is preferred, or neither model is preferred. These tests cannot say the H0 is better than H1. #stats280
+
+3) How does it control the bias for complex models?
+They don't have an explicit penalty for complexity. But they assume the simpler model is true, unless there is "strong" evidence for the more complex model. #stats280
+
+
+
+
+
+
+
