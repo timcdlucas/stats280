@@ -22,6 +22,8 @@ is great. #dataviz is vital. #stats280
 And as a final aside, I am agnostic between frequentism, bayes and 
 more machine learning type approaches. #stats280
 
+
+
 ## Introduction
 
 ### Tasks
@@ -32,7 +34,7 @@ https://dynamicecology.wordpress.com/2013/10/16/in-praise-of-exploratory-statist
 
 
 They ask different questions. Which of these hypotheses does my data 
-support? How/how well can I predict something of interest. What is 
+support? How/how well can I predict something of interest? What is 
 interesting in my data? #stats280
 
 ### Explore
@@ -64,14 +66,14 @@ mtcars %>%
 lm(mpg ~ wt, mtcars) %>% anova
 
 ### predictive
-
-# Fit two predictive models
-lm <- lm(mpg ~ ., mtcars)
-mean(lm$residuals ^ 2)
-
-sv <- e1071::svm(mpg ~ ., mtcars)
-mean(sv$residuals ^ 2)
-plot(sv$fitted ~ mtcars$mpg)
+  
+  # Fit two predictive models
+  lm <- lm(mpg ~ ., mtcars)
+  mean(lm$residuals ^ 2)
+  
+  sv <- e1071::svm(mpg ~ ., mtcars)
+  mean(sv$residuals ^ 2)
+  plot(sv$fitted ~ mtcars$mpg)
 
 
 ```
@@ -94,17 +96,30 @@ implementation. #stats280
 
 Model selection: when we have multiple models or hypotheses how do we
 choose which one(s) to keep or are good? Our answer could be 1 or more 
-"best" models oe "we don't know". Examples: Frequentist tests, AIC, 
+"best" models or "we don't know". Examples: Frequentist tests, AIC, 
 predictive accuracy, Bayes factors. #stats280
 
 Model structure: what is the structure of the underlying mathematical 
-model? There is always an underlying mathematical, though it might be
+model? There is always an underlying model, though it might be
 hard to see. Examples: linear model (maybe discrete x's), decision trees, 
 random effects. #stats280
 
 Parameter estimation: a model has parameters. How (in theory) do we 
 decide what they are? Examples: maximum likelihood, bayesian estimation.
 #stats280
+
+-par-choice-fig.png
+
+ggplot(mtcars, aes(disp, mpg)) + 
+  geom_point() +
+  geom_abline(intercept = 32, slope = -0.05) + 
+  geom_abline(intercept = 33, slope = -0.06, colour = 2) + 
+  geom_abline(intercept = 34, slope = -0.07, colour = 3) + 
+  geom_abline(intercept = 32.5, slope = -0.07, colour = 4) + 
+  geom_abline(intercept = 35, slope = -0.08, colour = 5) + 
+  geom_abline(intercept = 29, slope = -0.05, colour = 6) 
+
+
 
 Implementation: how do we literally do what we decided above? If we 
 want to select pars by MaxLikelihood, how do we do that? Becomes more
@@ -113,9 +128,10 @@ INLA or MCMC etc. #stats280
 
 
 
-This covers more analyses than one might think. To show this, I'll fit 
-2 models, (y = bx + c and y = c) and select on in 3 ways (ignoring 
+This schematic covers more analyses than one might think. To demonstrate, I'll fit 
+2 models, (y = bx + c and y = c) and select between them in 3 ways (ignoring 
 implementation for now). #stats280
+- analysis_schem.png
 
 
 1) Select pars that minimise absolute error between data and model. 
@@ -177,7 +193,7 @@ maxlike_lm_fig.tex
 ```{pipeline3}
 
 ## Fit by bayes
-## Compare by bayesuan waic
+## Compare by bayes factor
 library(INLA)
 b1 = inla(mpg ~ disp + 1, data =  mtcars, control.compute=list(waic=TRUE))
 b2 = inla(mpg ~ 1, data = mtcars, control.compute=list(waic=TRUE))
@@ -188,7 +204,7 @@ b1$mlik[1] - b2$mlik[1]
 
 This way of dividing an analysis will form the backbone of the course
 content. We'll look at model selection (frequentist, bayes, CV, etc.), 
-then parameter selection, then lots of models and finally implementation.
+then parameter estimation, then lots of models and finally implementation.
 #stats280
 
 - analysis_schem.png
@@ -294,7 +310,7 @@ arrows(x2, 0.3*x2+2, x2, yData+0.04, col=b, lwd=3, length=0.1)
 text(x2-0.4, yData-0.2, '${\\color[HTML]{377EB8}(x,y)}$')
 
 
-text(2.6, 1.1, '$ \\textrm{Absolute error}=({\\color[HTML]{377EB8}y} - {\\color[HTML]{377EB8}x}{\\color[HTML]{984EA3}\\beta})$', cex=1.5)
+text(2.6, 1.1, '$ \\textrm{Abs error}=\\textrm{abs}({\\color[HTML]{377EB8}y} - {\\color[HTML]{377EB8}x}{\\color[HTML]{984EA3}\\beta})$', cex=1.5)
 
 dev.off()
 
