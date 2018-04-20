@@ -36,7 +36,7 @@ Model structure: Lots. glm, fixed vs random effects, trees, GP, categorical vs c
 Parameter selection: Max Likelihood, bayes, CV for hyperpars, normalized information gain etc.
 Implementation: MCMC vs INLA for example.
 
-Some dependence. Certain model selections require certain parameter selections. Can't do AIC/freq/bayes unless loss function is likelihood (+ prior).  
+Some dependence. Certain model selections require certain parameter selections. Can't do AIC/freq/bayes unless loss function is likelihood (+ prior).  
 Can't select with out of sample unless you have Ys.
 
 Confirmatory: probably model selection by IT, freq or bayes, probably relatively simple model structure or mechanistic model
@@ -357,7 +357,32 @@ Can't find optimum or whatever
 
 
 
+### parameter estimation
 
+#### overview
+
+Given a model structure, the main task in statistics is to estimate the parameters. #stats280
+
+In general to do this we define what we count as a 'good' set of parameters and then find the values for each parameter that are "most good". #stats280
+
+The practical side of finding these good parameter values will be covered later in the"implementation" section. #stats280
+
+Our definition of good or bad parameters has to be a function that takes the real value of a datapoint and the value 
+Predicted by the model and returns a number. This number is the "loss". #stats280
+
+
+
+
+#### loss functions
+
+The simplest loss functions are simply a measurement of how well out poorly the model and a set of parameters predicts the data. #stats280
+
+This can include things like the absolute error. 
+
+#### likelihood
+
+
+#### bayes
 
 
 
