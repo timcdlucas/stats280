@@ -381,7 +381,7 @@ This can include things like the absolute error.
 
 #### likelihood
 
-
+If you wanted to draw a line between statistics and machine learning (I don't) this wouldn't be a bad choice. #stats280
 #### bayes
 
 
