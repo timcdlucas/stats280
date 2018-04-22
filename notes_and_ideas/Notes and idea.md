@@ -375,10 +375,9 @@ Predicted by the model and returns a number. This number is the "loss". #stats28
 
 #### loss functions
 
-The simplest loss functions are simply a measurement of how well out poorly the model and a set of parameters predicts the data. #stats280
+The simplest loss functions are simply a measurement of how well or poorly the model and a set of parameters predicts the response data (y). #stats280
 
-This can include things like the absolute error. 
-
+This can include things like the absolute error (true y - predicted y ignoring the sign) or squared error ((true y - predicted y)^2). #stats280
 #### likelihood
 
 If you wanted to draw a line between statistics and machine learning (I don't) this wouldn't be a bad choice. #stats280
