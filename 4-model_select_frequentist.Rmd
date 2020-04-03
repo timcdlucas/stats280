@@ -31,7 +31,7 @@ dev.off()
 
 Here we have reordered `disp` 100 times to break any association with mpg (H0). We then plot the betas as a histogram. The red line show the beta estimated from the non-randomised data. #stats280
 
-In 100 random resamplings of the data (H0), we never get an effect size as big as we saw in the real data. So we concluse 
+In 100 random resamplings of the data (H0), we never get an effect size as big as we saw in the real data. So we conclude that H0 is not a good model and accept H1. #stats280
 
 
 

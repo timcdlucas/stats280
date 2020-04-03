@@ -203,18 +203,16 @@ Implementation
 
 
 ### Model structures overview
+Y = link( f( X, theta) )
 
-~ X1 + X2 - Clustering, dimensionality reduction (mostly ignore)
-c(Y1, Y2) ~ X1 + X2 - Classification, multivariate stats. (mostly ignore)
-Y ~ X1 + X2 - EVERYTHING
+Y univariate, multivariate, nothing.
 
+Link functions... 
 
-How many x's
-What form f(x)
-Distributions. Error distribution of y, distribution of random effects, etc.
+F is most of it.
 
 
-Parametric vs nonparametric.
+
 
 #### Continuous / natural numbers Y
 
