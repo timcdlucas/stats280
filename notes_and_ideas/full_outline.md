@@ -94,8 +94,84 @@ t5.10{
 ## Max Likelihood
 
 t5.11{
-The
+The simple loss functions previously mentioned don't consider probability in any way. If we want principled uncertainty estimates (how accurate do we think our parameter estimates are?) we need to include probability. #stats280
 }
+
+t5.12{
+The first step for including probability with our models is to have a loss metric that is on the probability scale. If the model estimates a value 'pred' but we observe 'obs' what is the probability of this occurring. #stats280
+}
+
+t5.13{
+This is called the likelihood. The likelihood is the probability of the data if we assume a certain parameter is true. #stats280
+}
+
+t5.14{
+Likelihood is similar to probability. If we know the model parameters we talk about probability of data. P(heads) = 0.5 on a fair coin. #stats280
+}
+
+t5.15{
+  If we know the data we talk about likelihood of parameters. If we see 60 heads, what's the likelihood that the coin is fair i.e. 50/50? #stats280
+}
+
+t5.16{
+In a continuous world we talk about probability density which doesn't relate to our typical understanding of probability. #stats280
+}
+
+
+t5.17{
+The probability of getting exactly 0.1 from a random number between 0 and 1 is zero, so we talk about density instead. #stats280
+}
+
+t5.18{
+Here is the normal probability density function with mean μ and sd σ. For any x we get a probability density. #stats280
+}{normalPDF.png}
+
+t5.19{
+In this case where we know μ=0 the probability density of drawing an x value of -1 is about 0.25. #stats280
+}{normalPDF2.png}
+
+t5.20{
+In this case where we know μ=0 the probability density of drawing an x value of -1 is about 0.25. #stats280
+}{normalPDF2.png}
+
+t5.21{
+  Now imagine we don't know the value of the mean μ but we have seen a datapoint with x=-1. #stats280
+}{normalPDF2.png}
+
+t5.22{
+The likelihood that the datapoint came from a distribution with μ=0 is 0.25. Reverse logic to probability. #stats280
+}{normalPDF2.png}
+
+t5.23{
+We can calculate the likelihood for each value of μ given that we've seen our one data point at x=-1. #stats280
+}{likelihoodNorm.png}
+
+
+
+
+t5.24{
+This is the likelihood function. The Maximum likelihood estimate of μ is at the highest value (μ=-1 here).  #stats280
+}{likelihoodNorm.png}
+
+
+
+t5.25{
+If we see two data points, to find the probability that they're both froma norm with μ=0 we mulitiply the probs. #stats280
+}{normalPDF3.png}
+
+t5.26{
+We multiply them because thats how you get P(event A AND event B). Probability of heads AND heads is 0.5 x 0.5 = 0.25 #stats280
+}{}
+
+t5.27{
+If we see n data points, we multiply them all together (written as Π). And this is our likelihood function. #stats280
+}{productLikelihoodNorm.png}
+
+t5.28{
+Multiplying the likelihoods of each data point assumes that all the datapoints come from the same distribution. It also assume they are independent of the others (i.e. if we see one high datapoint, the next datapoint is no more likely to be high than usual). #stats280
+}{productLikelihoodNorm.png}
+
+This tweet rephrased from Mark brewer. Not sure how to handle this stuff.
 
 
 
